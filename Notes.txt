@@ -1,0 +1,126 @@
+			TWX PROXY v2.03 SOURCE RELEASE NOTES
+				12 March 2005
+
+FOREWORD
+
+TWX Proxy began as a pet project of mine back in early 1999.  Over a 6 year period, the project evolved from a simple VB "sendkeys" application into a fully featured telnet proxy server complete with its own flatfile database and powerful scripting engine.  With frequent revisions, the project has stayed quite lean considering its feature set (some 23000 lines of core code).
+
+While I originally started the project in an effort to improve my own play of Trade Wars 2002, it rapidly gained momentum and demand for it grew.  By 2002, it was almost impossible to compete in TW2002 tournament play without prior programming experience or the use of TWX Proxy.  The revolutionary proxy design that was the major selling point of the program allowed users to put together the best features of other helpers with many of the freeware (and commercial) scripts that became available for it.  While many other helpers have a far simpler and easier to use interface, TWX Proxy made its dent through reliability, flexibility, and scriptability.
+
+The program has been through many major revisions, starting from the low profile 1.1 and finishing with the largely refactored 2.03.  1.06b saw the introduction of the Pack2 scripts - a commercial script library that had a massive impact on the way TW2002 is played.  The largest revision (2.00) saw a near complete rewrite of the source code to include a much more efficient script compiler/interpreter that allowed far more modularity in script construction.  The 2.00 release was a major breakthrough in scripting capability featuring scripts that were capable of independently roaming a random universe while trading, creating, upgrading and colonising planets without any user intervention required.
+The 2.03 release was mostly a cleanup effort to try and root out some of the last remaining corners of legacy code and pound the program into a more modular layout.  While still far from perfect, the code is finally in a state where I no longer feel extremely embarrassed putting it out where others can get to it.
+
+It is my hope that by releasing this source under the GPL, TWX Proxy will continue to grow as part of a community effort and will continue to help level the TW playing field between the general population and the programmers that actively dominate the game.  I would like to offer my heartfelt gratitude to the many testers, scripters and users that have all made such an effort to make TWX Proxy a success.  Without you, this project simply would not exist.
+
+
+ABOUT ME (Briefly)
+
+I was born and grew up in the suburbs of West Auckland, New Zealand.  I always had more than a passing interest in computers and programming, and decided to make it my career choice.  I took up playing TW2002 upon leaving high school and beginning studies for a Bachelor's Degree in Computing Systems, from which I graduated in 2002.  Most of the development on TWX Proxy took place over the 3 year period of my studies.
+
+In 2002 I took up work as an IT service consultant in a small company on the North Shore of Auckland City.  The job was extremely stressful but provided some badly needed experience in many of the different areas of IT (technical work, database programming, accounting systems, network engineering).  For the duration of this job, I continued to work on TWX Proxy part time, making improvements to it as my programming experience developed.
+
+After 18 months, I took up work within a professional software company that specialises in developing high performance HR systems for local corporates and government departments.  The job has been an excellent learning experience in the development of large scale object-oriented systems, eventually providing much needed exposure to .NET technology.  I've done my best to apply many of the newer things I've learnt here into TWX Proxy, although spare hours are few and the static design of the program has made this difficult to do.
+
+New Zealand is a beautiful country.  It is politically stable, environmentally very safe, it has a good economy and it is possible to have a fantastic lifestyle here.  Unfortunately because we are so far from the rest of the world, not much happens down here!  Because of this, we have the tradition of what is called a 'Big-OE' (overseas experience).  Most of the NZers in their mid-to-late 20s are living and working outside the country - more often out of boredom than anything else.  Often these people take many years to come home, some never do.  
+
+Now at 23 years old, I hope to take my chance to join this experience sometime within the next year.  Where I will go, I really don't know.  When I will come back, I have absolutely no idea.  I hope for the chance to take up software development contracts around the world, particularly in the UK, Asia and North America.  
+
+Maintaining TWX Proxy will be impossible for me.  However, if you have a curiousity, or would be interested in taking on a software developer for a while, you are more than welcome to drop me a line!
+
+My email address is twx@rmulder.com.  Please don't contact me with questions about the workings of TWX Proxy, its scripts, or their source code.  The project is over for me and I no longer want the responsibility of supporting it.
+
+
+SOURCE RELEASE SUMMARY
+
+Because of its numerous revisions, the source code of TWX Proxy is far from a logical wonder.  Its ugly, unabstracted and not particularly well documented.  However, it does actually work!  On last test there were no memory leaks or serious stability issues (but please don't hang me if you find any).  There is a great deal of legacy code throughout the program, particularly throughout the UI and data extractor.  The program was never developed with a top-down design, so there are many anomolies in the source and not all the code supplied is guaranteed to be in use.
+
+The v2.03 source compiles and runs under Borland Delphi 5, with dependancy on the following external components (as provided in the source compression in '.Components\'):
+
+Memcheck (memcheck.pas): This is a brilliant tool that helps to track memory allocation at run time.  While TWX Proxy will function without this (with the correct compiler directives set), you run the risk of adding memory leaks by doing this.  Certainly I wouldn't use it if you were making a release build.
+
+TrayIcon (trayicon.pas): This is a useful little component that allows TWX Proxy to exist as a tray icon on the taskbar.  It will need to be installed for the program to compile.
+
+Encryptor (encryptor.pas): This small custom component is used for the encryption routines required to store/retrieve many of the scripts TWX Proxy uses.  It needs to be installed for the program to function.
+
+ICS Components (ics.zip): This is a brilliant component suite written for Delphi by 
+François Piette.  TWX Proxy makes use of the telnet client included in this suite - so it must be decompressed and installed before attempting to compile.
+
+The source compression also includes:
+
+.Media\ : A small collection of images used within TWX Proxy.  Already embedded in the project resources, but are provided separately for flexbility.
+
+.Source\ : Full program source in object pascal form with its external utilities.
+
+.Scripts\Pack1\ : Pack1 scripts with full source code (nothing special, as this is included in the normal TWX Proxy release version).
+
+.Scripts\Pack2\ : Pack2 scripts with full source code (once again, included in the release version).
+
+.Scripts\Include\ : The full source code (in .ts form) for all include files as used by the Pack2 scripts.  This is the core of the script library.
+
+.Scripts\Extras\ : This includes the source for two experimental scripts that have been a side project of mine while working on TWX Proxy.  I make no guarantee as to their usefulness or condition:
+
+WorldSST.ts - This is a fully featured, overclocked, turbo searching/refurbing world SST script that can work with a near limitless number of ships.  You'll need to have a little bit of script experience to get it working properly, as the transport limit for all ships is hardcoded.
+
+XBot.ts - This is a powerful control script that I've been building to help with tournament play.  While the design of it is very much mapped into my own personal play, it is a good example of what TWX Proxy is capable of when processing input from connected terminals.  Proper use of this script can effectively turn any player into a human bot.  I suggest analysing it closely before use - this will only be useful to people with scripting experience.
+
+XBotCmd.ts - Coded commands for the above script (not to be executed separately).
+
+
+UTILITY SOURCE
+
+TWX Proxy has several minor external utility programs that help to make up its feature set.  The source for these utilities is included in the compression:
+
+CapEdit.dpr: Source code for the binary capture file editor as it exists in the release version (2.03).
+
+PreComp.dpr: Precompiler used to generate the .inc files for the pack2 subroutines.
+
+TWXC.dpr: External .cts compiler - largely dependant on the TWX Proxy source itself.
+
+
+PROGRAM SOURCE
+
+The program consists of a simple architecture made up of a set of interdependant modules, each responsible for a different feature area.  These modules are described as follows:
+
+TModMenu (menu.pas): This module is responsible for providing the terminal menu services as they sit on the telnet server.  It is also utilised by the script interpreter to create script-specific menus.  All menu options are hard coded (in an ugly way).
+
+TModDatabase (database.pas): This module provides database services to the rest of the program, controlling all access to the .xdb files through a cache gateway.
+
+TModLog (log.pas): This module provides text and binary logging services, along with the playback of these logs.
+
+TModExtractor (process.pas): This is a very old module that processes incoming data from the telnet client (TModClient), parses it, and drops it to the database module (TModDatabase) for storage.  This is the largest area of legacy code still within the program.
+
+TModServer (tcp.pas): This is a wrapper module for the TCP server that handles terminals connected to TWX Proxy.
+
+TModClient (tcp.pas): This is a wrapper module for the telnet client (TnCnx) that handles the TWGS server-side connections.
+
+TModAuth (auth.pas): This module is responsible for negotiating registration details with the TWX Proxy Authentication Server.  It has been deactivated in this release.
+
+TModBubble (bubble.pas): While very old and ugly code, this module performs recursive calculations on sector details from TModDatabase to find and report bubbles.
+
+TModGUI (gui.pas): This module provides a gate between the Graphical User Interface and the underlying modules.  While the GUI has free access to all underlying modules, there is a strictly preserved abstraction that prevents these modules accessing the GUI directly.  The vision behind this is to easily allow a different interface to be connected to the program without messing up the internals.  All calls from the modules to the GUI must pass through this object.
+
+TModInterpreter (script.pas): This module is responsible for the retrieval, parsing and execution of .cts code as generated by the compiler.
+
+TScriptCmp (scriptcmp.pas): This object forms the core of the TWX Proxy script compiler.  While its syntax checking is perhaps far below standard, it does an efficient job of crunching the text source into .cts code to be interpreted by the TModInterpreter module.
+
+TScriptRef (scriptref.pas): This object is shared between the compiler and interpreter modules.  It acts as a gateway between TWX Proxy and its script commands.
+
+Script commands (scriptcmd.pas): This source file holds the specification and internals of all script commands.
+
+
+Other source files of interest:
+
+Core.pas: Central to all modules, this file contains declarations used by all of them.
+
+Persistence.pas: This file contains base module code that is used to persist configuration through the streaming of published properties (using RTTI).
+
+TWXExport.pas: This file contains code to export to the internationally recognised cross-helper .TWX v1 file format.
+
+Utility.pas: This file contains several small utility functions as used throughout the program.
+
+
+AFTERWORD
+
+I wanted to spend far longer describing the inner workings of TWX Proxy and its scripts, although the clock is ticking on this release and I realise that there can be no better explanation than simply suggesting an in-depth analysis of the source itself.  With the exception of perhaps a few routines within the script compiler/interpreter, TWX Proxy is not a complicated program.  I wish you all the best in your travels through the source and hope you learn a few things from it.
+
+Remco Mulder.
