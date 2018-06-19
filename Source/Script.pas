@@ -75,7 +75,8 @@ uses
   Observer,
   ScriptCmp,
   ScriptRef,
-  FormScript;
+  FormScript,
+  FormSetup;
 
 type
   TScript = class;
@@ -106,6 +107,7 @@ type
     FScriptMenu: TMenuItem;
     FScriptRef: TScriptRef;
     FAutoRun: TStringList;
+    FShortName: Boolean;
     FtmrTime: TTimer;
     FTimerEventCount: Integer;
     FProgramDir: string;
@@ -122,6 +124,8 @@ type
     { ITWXGlobals }
     function GetProgramDir: string;
     procedure SetProgramDir(const Value: string);
+    function GetShortName: Boolean;
+    procedure SetShortName(Value: Boolean);
 
   public
     procedure AfterConstruction; override;
@@ -152,6 +156,7 @@ type
 
     property Scripts[Index : Integer] : TScript read GetScript; default;
     property AutoRun: TStringList read GetAutoRun;
+    property ShortName: Boolean read GetShortName write SetShortName;
 
   published
     property AutoRunText: string read GetAutoRunText write SetAutoRunText;
@@ -387,7 +392,11 @@ begin
 
   if not (Error) then
   begin
-    ProgramEvent('SCRIPT LOADED', Filename, TRUE);
+    if (FShortName = True) then
+      ProgramEvent('SCRIPT LOADED', Script.ScriptName, TRUE)
+    else
+      ProgramEvent('SCRIPT LOADED', Filename, TRUE);
+
     TWXServer.NotifyScriptLoad;
 
     // add menu option for script
@@ -400,6 +409,7 @@ end;
 procedure TModInterpreter.Stop(Index : Integer);
 var
   ScriptName : string;
+  ShortName : string;
   Script: TScript;
 begin
   // broadcast termination message
@@ -419,7 +429,15 @@ begin
   ScriptList.Delete(Index);
 
   // trigger program event
-  ProgramEvent('SCRIPT STOPPED', ScriptName, TRUE);
+  if (FShortName = True) then
+  begin
+    //UpperCase(ShortFilename(StripFileExtension(ScriptName)))
+    ShortName := ShortFilename(StripFileExtension(ScriptName));
+    TWXServer.ClientMessage(endl + ANSI_15 + 'Script Name: ' + ANSI_7 + ScriptName + endl + endl);
+    ProgramEvent('SCRIPT STOPPED', ShortName, TRUE);
+  end
+  else
+    ProgramEvent('SCRIPT STOPPED', ScriptName, TRUE);
 
   TWXServer.NotifyScriptStop;
 end;
@@ -620,6 +638,17 @@ end;
 procedure TModInterpreter.SetAutoRunText(Value: string);
 begin
   AutoRun.Text := Value;
+end;
+
+function TModInterpreter.GetShortName: Boolean;
+begin
+  Result := FShortName;
+end;
+
+procedure TModInterpreter.SetShortName(Value: Boolean);
+begin
+  if (FShortName <> Value) then
+    FShortName := Value;
 end;
 
 // ***************************************************************

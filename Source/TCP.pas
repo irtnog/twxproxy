@@ -173,7 +173,7 @@ begin
 
   // set defaults
   ListenPort := 23;
-  BroadCastMsgs := True;
+  BroadCastMsgs := FALSE;
 end;
 
 procedure TModServer.BeforeDestruction;
@@ -288,7 +288,7 @@ begin
 
     // Broadcast confirmation to client
     Socket.SendText(endl + ANSI_7 +
-                      'TWX Proxy Server ' + ANSI_15 + 'v' + ProgramVersion + ANSI_7 + endl +
+                      'TWX Proxy Pro Server ' + ANSI_15 + 'v' + ProgramVersion + ANSI_7 + endl +
                       '(' + ReleaseVersion + ')' + endl + endl +
                       'There are currently ' + ANSI_15 + IntToStr(tcpServer.Socket.ActiveConnections) + ANSI_7 + ' active telnet connections' + endl);
 
@@ -337,7 +337,8 @@ begin
   // manual client message to all sockets except the one disconnecting
   for I := 0 to tcpServer.Socket.ActiveConnections - 1 do
     if (tcpServer.Socket.Connections[I] <> Socket) then
-      tcpServer.Socket.Connections[I].SendText(endl + ANSI_7 + 'Connection lost from: ' + ANSI_15 + Socket.RemoteAddress + ANSI_7 + endl);
+      if (AcceptExternal) then
+        tcpServer.Socket.Connections[I].SendText(endl + ANSI_7 + 'Connection lost from: ' + ANSI_15 + Socket.RemoteAddress + ANSI_7 + endl);
 end;
 
 procedure TModServer.tcpServerClientError(Sender: TObject;

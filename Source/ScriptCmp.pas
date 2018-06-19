@@ -33,7 +33,7 @@ uses
   Contnrs;
 
 const
-  COMPILED_SCRIPT_VERSION = 3;
+  COMPILED_SCRIPT_VERSION = 10;
 
   PARAM_CMD = 0;
   PARAM_VAR = 1; // User variable prefix
@@ -55,7 +55,7 @@ type
   EScriptError = class(Exception);
 
   TScriptFileHeader = record // header at top of compiled script file
-    ProgramName : string[10];
+    ProgramName : string[14];
     Version     : Word;
     DescSize,
     CodeSize    : Integer;
@@ -1556,6 +1556,8 @@ begin
   ScriptText := TStringList.Create;
 
   try
+    if (DescFile <> '') then
+      FDescription.LoadFromFile(DescFile);
     ScriptText.LoadFromFile(Filename);
     IFLabelCount := 0;
     WaitOnCount := 0;
@@ -1581,7 +1583,7 @@ begin
   AssignFile(F, Filename);
   ReWrite(F, 1);
 
-  Hdr.ProgramName := 'TWX SCRIPT';
+  Hdr.ProgramName := 'TWX PRO SCRIPT';
   Hdr.Version := COMPILED_SCRIPT_VERSION;
   Hdr.CodeSize := FCodeSize;
   Hdr.DescSize := Length(FDescription.Text);
@@ -1689,7 +1691,7 @@ begin
   BlockRead(F, Hdr, SizeOf(Hdr));
 
   // check header
-  if (Hdr.ProgramName <> 'TWX SCRIPT') then
+  if (Hdr.ProgramName <> 'TWX PRO SCRIPT') then
     raise EScriptError.Create('File is not a compiled TWX script')
   else if (Hdr.Version <> COMPILED_SCRIPT_VERSION) then
     raise EScriptError.Create('Script file is an incorrect version');

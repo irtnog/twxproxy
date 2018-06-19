@@ -37,7 +37,7 @@ uses
 
 type
   TSectorPosition = (spNormal, spPorts, spPlanets, spShips, spMines, spTraders);
-  TDisplay = (dNone, dSector, dDensity, dWarpLane, dCIM, dPortCIM, dPort, dWarpCIM);
+  TDisplay = (dNone, dSector, dDensity, dWarpLane, dCIM, dPortCIM, dPort, dWarpCIM, dVScreen);
 
   TModExtractor = class(TTWXModule, IModExtractor)
   private
@@ -66,6 +66,7 @@ type
     procedure ProcessWarpLine(Line : String);
     procedure ProcessCIMLine(Line : String);
     procedure ProcessSectorLine(Line : String);
+    procedure ProcessVScreen(Line : String);
     procedure ProcessLine(Line : String);
     procedure ProcessPortLine(Line : String);
     procedure StripANSI(var S : string);
@@ -723,6 +724,18 @@ begin
   // Process a line from the CR port display
 end;
 
+procedure TModExtractor.ProcessVScreen(Line : String);
+var
+  tempStr : string;
+begin
+  if (Pos('StarDock is', Line) > 0) then
+  begin
+    tempStr := Copy(Line, 44, Pos('.', Line));
+    tempStr := Copy(tempStr, 0, Length(tempStr) - 1);
+    TWXDatabase.LastStardock := StrToInt(tempStr);
+  end;
+end;
+
 procedure TModExtractor.ProcessLine(Line : String);
 var
   S,
@@ -882,6 +895,17 @@ begin
   begin
     // begin CIM download
     FCurrentDisplay := dCIM;
+  end
+  else if (Copy(Line, 26, 54) = 'Game Configuration and Status') then
+  begin
+    FCurrentDisplay := dVScreen;
+  end
+  else if (FCurrentDisplay = dVScreen) then
+  begin
+    if (Copy(Line, 14, 24) = 'StarDock is') then
+    begin
+    end;
+    ProcessVScreen(Line);
   end;
 
   TWXInterpreter.TextLineEvent(Line, FALSE);

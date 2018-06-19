@@ -120,8 +120,8 @@ begin
   Head.sectors := htonl(TWXDatabase.DBHeader.Sectors);
   Head.stardock := htonl(TWXDatabase.DBHeader.StarDock);
   Head.cls0port_sol := htonl(-1);
-  Head.cls0port_alpha := htonl(-1);
-  Head.cls0port_rylos := htonl(-1);
+  Head.cls0port_alpha := htonl(TWXDatabase.DBHeader.Class0_1);;
+  Head.cls0port_rylos := htonl(TWXDatabase.DBHeader.Class0_2);;
   Head.crc32 := 0;
 
   ZeroMemory(@(Head.reserved), Length(Head.reserved));

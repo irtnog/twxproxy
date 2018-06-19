@@ -1,4 +1,183 @@
-TWX PROXY v2.03 Build 13
+TWX Proxy Pro v2.10 Changes
+
+Well, after some clean up of the last set of bug fixes.  There really was nothing else to do except to add new
+features, and change a few others.  I started look at the feature requests from twxproxy.com.  Although, I did
+not scan through posts prior to Novembe 2004.  I found a few feature request that made since to add to TWX at
+some point. This of course not including a few of my own requests that went unanswered by Xide.  So below you
+will find the break down of all the changes, additions, fixes in TWX.
+
+Program:
+
+* PROGRAM NAME: As I had reported on the TWX Proxy Group's website.  In order to keep ElderProphet, and his
+  fans at EIS, happy and to allow him to produce and release the "Official" TWX Proxy.  I have made a minor
+  changed to TWX's name.  This will allow the Tradewars 2002 players to know which TWX product they are using.
+  And to know that the two programs are not the same product.
+
+  From this release forward, the name of this program will be TWX Proxy Pro, aka TWX Pro.
+
+  NOTE: I have also changed the icons used for TWX.  Instead of the Green colored icons.  It now uses a
+  red colored icons.
+
+* INTERPRETER: In v2.03, Xide added a new parameter the OpenMenu command.  This parameter was to allow the
+  script author to cause TWX not to pause once a Menu was opened.  (I can only guess as to the reason for
+  this, or as to whom may have want it added.)  But, Xide had neglicted to update the interpreter as to how
+  many parameters it now takes, along with there types.  This has been corrected.
+
+* INTERPRETER: On twxproxy.com RammaR had request that the STARDOCK System Value be updated by V Screen, in
+  addition to visiting the sector StarDock is in.  This function has been added, and STARDOCK can now be
+  updated by by the V Screen, as well as visiting the sector SD is in.
+
+  NOTE: There is a draw back to this, that is caused by the original TWX Database code.  If you plan to use a
+  script uses the STARDOCK value.  Then you must do one of the following for the SD sector to be available to
+  the script after the V screen listing.
+
+  1) Perform a manual V screen listing, then load any script that uses the STARDOCK value.
+  2) Have a script perform the V screen listing, then have it load a script that uses the STARDOCK value.
+  3) Hava the script perform the V screen listing, then perform a redisplay of the current sector.
+
+  Option 3 is the most viable option for this.  As it will work for any script running at the time of the update.
+  And those script(s) loaded by any script currently running.
+
+* INTERPRETER: On twxproxy.com Traitor had request that two more System Values be added.  Both System Values as
+  he had requested was to return the sectors that the Class 0 ports Alpha Centauri and Rylos are in.  Traitor
+  you will be happy to know that both System Values have been added.
+
+* MENU SYSTEM: Minor change to the display of TWX menus and custom menus.  First, moved the menu general
+  options to the bottom of the display.  This places the menu options that you want/need uptop.  Second,
+  changed the display color of the HotKey, or Option key, to make it easier to decern them from the rest of
+  the menu.
+
+* MENU SYSTEM: When v2.00 first went public myself and a few others. Requested that the menuing system the
+  had the ability to be dynamic.  Or atleast be as close to dynamic without a complete rewrite.  With this
+  release the menuing system is now dynamic.  Or as dynamic as it can be without a complete rewrite of the system.
+
+* INTERPRETER: Added a new OPTIONAL parameter to the addMenu command.  This allows the user to create a menu,
+  or menu item, that will be hidden upon display of the of it's parent menu.
+
+  NOTE:  This is totally backwords compartible with previous behaviours of the command.
+
+* INTERPRETER: Added a new command - hideMenuItem.  This allows the user to hide a menu item within the
+  currently displayed parent menu.  If a menu item is hidden from view, it's hotkey/option key is not
+  activatible.  This allows for the user to use two, or more, menus with the same hotkey/option key available
+  for possible use.
+
+  NOTE:  This can only be used on menu items in the currently opened parent menu.
+
+* INTERPRETER: Added a new command - addMenuLabel.  This allows the user to add labels to a menu.
+
+  NOTE:  Menu label can also be automatically hidden from display.  Or it can be hidden by the hideMenuItem
+  command.
+
+* MENU SYSTEM:  To allow for the use of labels with in a menu.  It was necessary to change the behaviour of
+  displaying custom menus.  In previous TWX versions all menu items, to be display, was automatically sorted
+  based upon it's hotkey/option key before they were displayed.  This sorting caused all the labels in a menu
+  to be placed at the top of the menu display.
+
+  Custom menus well no longer be sorted prior to being displayed.  This allows the user to create the menu
+  in the way they wish it to be displayed.  And allows for the use of labels within the menu.
+
+* COMPILER & CORE: When TWX v2.00 first came out.  Xide originally created the script compiler to improve the
+  runnability of scripts in TWX.  He even created a external compiler for the script authors to compile their
+  own scripts for possible distributions.  A feacture of the external compiler was the ability to add a
+  description to the compiled script.  I, and I'm sure most everyone else, had thought that the script
+  description would be displayed either just before it is run, or during the listing of the scripts in the
+  script directory.
+
+  Although, I never had the need to add a script description to my compiled scripts, as they were never
+  distributed to anyone.  I had thought that during the several years TWX Proxy v2.xx was out. That someone
+  would have done so.  I have yet to come across a compiled script that had a script description in it.
+
+  But, what I had found within the last couple of days.  Was that the feature, although shown to be present in
+  the TWXC.exe help display, was never fully implemented.  So, I went and finished implementing the feature.
+  As the TWXC.exe's help display states.  If you wish to add a script description to your script when you
+  compile it.  Just add another parameter that points to a text file that contains the script description.
+  And it will compile compile your script and add the description, not the file with the description, to you
+  compiled script.
+
+  The script description will be displayed when doing a script listing, $SD.
+
+  NOTE: The script description does not, nor will it ever, interfere with your scripts runnability or speed
+  at which it will run.
+
+* NETCODE & CORE: I believe that the displaying of local, i.e. the same computer, client connections and disconnects
+  are not necessary.  So the default selected state of the 'Broadcast a message when a client connecs'
+  in the setup menu has changed to the following:
+
+	I. You are unable to changed the setting of this option, unless you ahve selected 'Accept external
+            connections'.
+
+	II. When not accepting external connections, the default is to not display messages when a local
+        client is connecting/disconnecting.
+
+* INTERPRETER: Further fixes for the new Decimal, or floating point, math operations.  As reported, and fixed,
+  in the previous release there was a bug with a decimal Precision of 0.  And upon further investigation, I
+  had found that there was a major issue with the results returned for any decimal calculations.
+
+  I was able to locate and fix the problem with the decimal calculations.  But, since I had no idea as to why
+  ElderProphet wanted Xide.  To code the decimal math operations they were coded.  So, I had planed to keep
+  the original code, along side the working code, and add a new command to turn the old code on/off.
+
+  But, after a surprised day of chating with ElderProphet. We had come to the conclusion that the old code
+  was not needed.  And that we have very different opinions of how the Precision 0 code should be.  At first
+  ElderProphet was of the strong opinion that the Precision 0 operations to behave exactly as previous versions
+  of TWX.  This included not allowing decimal values to be given for any math operation.  And to truncate the
+  results of Division calculations
+
+  Then later he decided that allowing decimal values for all math operations. Was a natural step with the new
+  decimal calculation operations, even for decimal precision 0.  With this I have no issue with, as I too also
+  think it is natural to start allowing for the use of decimal values.
+
+  But, I believe that when it comes to allowing whole numbers or decimal values.  That TWX should still behave
+  similar to previous versions, when using a Precision of 0, by rounding down the results.  As this would
+  follow the spirit of TWX's original math operations.  And follow the way that Tradewars 2002 does it's own
+  math calculations.  With this it would also have the least amount of impact on currently available scripts.
+
+  Of course ElderProhet has a different opinion on this, and refers to mine as just hogwash.  But, with the
+  different versions of TWX going to be out.  There is really no need to becker over it.  As such I polished
+  off the precision 0 code to be similar to previous version.  If you supply a whole number for a math
+  operation.  The result will be the same as previous versions.  But, if you supply atleast one value that
+  is a decimal.  Then the math operation(s) will perform the calculation, and the result will be rounded down.
+
+
+
+
+TWX PROXY v2.05 Release Candidate Changes
+
+Starting with release v2.05, all Bug releases will have the Release version number, 2.0x, incremented.
+All releases with new features will have the Minor version number, 2.x5 incremented.
+The Major version number, X.05, will be incremented when the number of, and/or the type of, new features require
+a new version number.
+
+Program:
+
+* INTERPRETER: For the setSectorParameter command.  The variable content field was set to the wrong size.
+  Instead of allowing for 40 characters, it only allowed 10.  Thanks goes to ElderProphet for bringing
+  this to my attention, and for the correct field size.
+  
+  NOTE:  Because of this, all v2.03 and v2.03B13 game db's are not compatible with v2.05.  Export all your
+  game data from the v2.03xx game db. Then create a new db in v2.05 and import the game data into this db.
+
+* DATABASE:  Once you have created a Sector variable with the setSectorParameter.  The moment you did
+  anything that would case the sector information to update.  Would cause all sector variable to
+  "disappear" from the database.  This has been fixed.
+
+* INTERPRETER: The setPrecision 0 was not working as intended.  As is documented in the TWX Proxy Script
+  Reference.  setProcisision 0 is supposed to work the same as previous versions of TWX Proxy. i.e. Round down
+  to the nearest number.  But, as SubG had reported, there was an issue with rounding to whole numbers.
+  For Addition, the rounding worked as expected.  But, Division and Subtraction always round up to the next
+  whole number.  While Multiplication rounded down two whole numbers.
+
+  This has been fixed.
+
+  NOTE:  There still is the issue of Multiplication rounding down two whole numbers, when using precisions
+  other than zero.  ElderProphet has supposedly fixed all issues with the Floating Point precision.  But, he
+  has refused all requests to send the updated code.
+
+* INTERFACE: Tweety had stated that the options for the Logging of data to be disabled.  Until such time as
+  the user enables the use of Logging for the current game db.  This is a logical behaviour, that should have
+  already been in place.  This has been implemented in this release.
+
+TWX PROXY v2.03 Build 13 Changes
 
 Program:
 

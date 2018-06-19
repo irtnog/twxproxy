@@ -155,6 +155,10 @@ type
 
   IModInterpreter = interface
     ['{C1F218BC-E9D9-4A90-8D35-69920A691044}']
+    function GetShortName: Boolean;
+    procedure SetShortName(Value: Boolean);
+
+    property ShortName: Boolean read GetShortName write SetShortName;
   end;
 
   IModCompiler = interface

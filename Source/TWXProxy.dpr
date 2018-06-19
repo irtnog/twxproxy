@@ -26,7 +26,9 @@ program TWXProxy;
 {%File 'changes.txt'}
 
 uses
+{$IFNDEF RELEASE}
   MemCheck,
+{$ENDIF}
   Forms,
   Windows,
   SysUtils,
@@ -83,7 +85,6 @@ var
   PersistenceManager: TPersistenceManager;
   MessageHandler: TMessageHandler;
   ProgramDir: string;
-  sPos: integer;
 
 function ModuleFactory(Module: TModuleType): TTWXModule;
 var
@@ -202,7 +203,7 @@ begin
 {$ENDIF}
 
   Application.Initialize;
-  Application.Title := 'TWX Proxy';
+  Application.Title := 'TWX Proxy Pro';
   SetCurrentDir(ExtractFilePath(Application.ExeName));
   ProjectVersionInfo.initVersionInfo;
   InitProgram;

@@ -34,7 +34,7 @@ uses
   SysUtils;
 
 const
-  DATABASE_VERSION = 7;
+  DATABASE_VERSION = 8;
 
   Day : array[1..7] of string = ('Sun', 'Mon', 'Tues', 'Wed', 'Thurs', 'Fri', 'Sat');
 
@@ -49,7 +49,7 @@ type
 
   // database records
   TDataHeader = record
-    ProgramName : string[12];
+    ProgramName : string[16];
     Version     : Byte;
     Sectors,
     StarDock,
@@ -179,6 +179,7 @@ type
     procedure CloseCache;
     function GetLastPortCIM: TDateTime;
     procedure SetLastPortCIM(const Value: TDateTime);
+    procedure SetStardock(iSector : Integer);
 
   protected
 
@@ -226,6 +227,7 @@ type
     property DataBaseOpen : Boolean read FDataBaseOpen;
     property DBHeader: TDataHeader read FDBHeader;
     property LastPortCIM: TDateTime read GetLastPortCIM write SetLastPortCIM;
+    property LastStardock: Integer write SetStardock;
 
   published
     property DatabaseName: string read GetDatabaseName write SetDatabaseName;
@@ -269,7 +271,7 @@ begin
 
   ZeroMemory(Result, SizeOf(TDataHeader));
 
-  Result^.ProgramName := 'TWX DATABASE';
+  Result^.ProgramName := 'TWX PRO DATABASE';
   Result^.Version := DATABASE_VERSION;
   Result^.Address := '<Server>';
   Result^.Port := 23;
@@ -347,7 +349,7 @@ begin
   Seek(DataFile, 0);
   BlockRead(DataFile, FDBHeader, SizeOf(TDataHeader));
 
-  if (DBHeader.ProgramName <> 'TWX DATABASE') then
+  if (DBHeader.ProgramName <> 'TWX PRO DATABASE') then
   begin
     TWXServer.Broadcast(endl + ANSI_12 + 'Warning: This database has been corrupted, no data will be saved/retrieved' + ANSI_7 + endl);
     CloseDatabase;
@@ -509,6 +511,9 @@ begin
 
     ReadData(@Sect, Index * SizeOf(TSector) + SizeOf(TDataHeader), SizeOf(Sect));
 
+    if (S.Vars = 0) and (Sect.Vars <> 0) then
+      S.Vars := Sect.Vars;
+
     // If this sector has been probed, recall warps if seen before
     if (S.Warp[1] = 0) and (Sect.Warp[1] <> 0) then
       S.Warp := Sect.Warp;
@@ -533,9 +538,23 @@ begin
     end;
 
     // save stardock details if this sector has it
-    if (S.SPort.ClassIndex = 9) and (Sect.SPort.ClassIndex <> 9) then
+    if (S.SPort.ClassIndex = 9) and (Sect.SPort.ClassIndex <> 9) and (FDBHeader.StarDock = 0) then
     begin
       FDBHeader.StarDock := Index;
+      WriteHeader;
+    end;
+
+    // save Alpha Centauri details if this sector has it
+    if (S.SPort.ClassIndex = 0) and (S.SPort.Name = 'Alpha Centauri') and (Sect.SPort.Name <> 'Alpha Centauri') then
+    begin
+      FDBHeader.Class0_1 := Index;
+      WriteHeader;
+    end;
+
+    // save Rylos details if this sector has it
+    if (S.SPort.ClassIndex = 0) and (S.SPort.Name = 'Rylos') and (Sect.SPort.Name <> 'Rylos') then
+    begin
+      FDBHeader.Class0_2 := Index;
       WriteHeader;
     end;
 
@@ -1338,6 +1357,15 @@ end;
 procedure TModDatabase.SetLastPortCIM(const Value: TDateTime);
 begin
   FDBHeader.LastPortCIM := Value;
+end;
+
+procedure TModDatabase.SetStardock(iSector : Integer);
+begin
+  if (FDBHeader.StarDock = 0) then
+  begin
+    FDBHeader.StarDock := iSector;
+    WriteHeader;
+  end;
 end;
 
 end.

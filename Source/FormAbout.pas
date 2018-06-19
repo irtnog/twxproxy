@@ -37,6 +37,8 @@ type
     Label1: TLabel;
     Shape1: TShape;
     Image1: TImage;
+    Label2: TLabel;
+    Label3: TLabel;
     procedure FormShow(Sender: TObject);
     procedure btnOKClick(Sender: TObject);
     procedure btnLicenseClick(Sender: TObject);
@@ -54,7 +56,7 @@ begin
   Left := (Screen.Width div 2) - (Width div 2);
   Top := (Screen.Height div 2) - (Height div 2);
 
-  lbVersion.Caption := 'TWX Proxy v' + ProgramVersion;
+  lbVersion.Caption := 'TWX Proxy Pro v' + ProgramVersion + 'RC';
 end;
 
 procedure TfrmAbout.btnOKClick(Sender: TObject);

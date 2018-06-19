@@ -121,6 +121,7 @@ type
     Label9: TLabel;
     tbShortenDelay: TEdit;
     Label20: TLabel;
+    cbShortName: TCheckBox;
     procedure FormHide(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure btnOKMainClick(Sender: TObject);
@@ -143,6 +144,9 @@ type
     procedure tmrRegTimer(Sender: TObject);
     procedure tbUserChange(Sender: TObject);
     procedure cbUseAuthProxyClick(Sender: TObject);
+    procedure cbLogClick(Sender: TObject);
+    procedure cbAcceptExternalClick(Sender: TObject);
+    procedure cbLogBinaryClick(Sender: TObject);
 
   private
     DataLinkList  : TList;
@@ -199,7 +203,11 @@ begin
   cbLogBinary.Checked := TWXLog.BinaryLogs;
   cbNotifyLogDelay.Checked := TWXLog.NotifyPlayCuts;
   tbShortenDelay.Text := IntToStr(TWXLog.MaxPlayDelay div 1000);
+  cbAcceptExternal.Checked := TWXServer.AcceptExternal;
   cbBroadCast.Checked := TWXServer.BroadCastMsgs;
+  if (cbBroadCast.Checked) and not (cbAcceptExternal.Checked) then
+    cbAcceptExternal.Checked := True;
+  cbShortName.Checked := TWXInterpreter.ShortName;
   cbLocalEcho.Checked := TWXServer.LocalEcho;
   tbMenuKey.Text := TWXExtractor.MenuKey;
 
@@ -286,7 +294,7 @@ begin
       if (FileOpen) then
         CloseFile(F);
 
-      if (Errored) or (Link^.DataHeader.ProgramName <> 'TWX DATABASE') or (Link^.DataHeader.Version <> DATABASE_VERSION) then
+      if (Errored) or (Link^.DataHeader.ProgramName <> 'TWX PRO DATABASE') or (Link^.DataHeader.Version <> DATABASE_VERSION) then
         FreeMem(Link)
       else
       begin
@@ -377,6 +385,7 @@ begin
   TWXAuth.Authenticate := cbAuthenticate.Checked;
 
   TWXInterpreter.AutoRun.Assign(lbAutoRun.Items);
+  TWXInterpreter.ShortName := cbShortName.Checked;
 
   TWXLog.LogANSI := cbLogANSI.Checked and cbLog.Checked;
   TWXLog.BinaryLogs := cbLogBinary.Checked and cbLog.Checked;
@@ -779,6 +788,48 @@ begin
   tbRegKey.Text := NewReg;
   cbAuthenticate.Checked := TRUE;
   tmrReg.Enabled := TRUE;
+end;
+
+procedure TfrmSetup.cbLogClick(Sender: TObject);
+begin
+  if (cbLog.Checked = True) then
+  begin
+    cbLogANSI.Enabled := True;
+    cbLogBinary.Enabled := True;
+    Label9.Enabled := True;
+    tbShortenDelay.Enabled := True;
+    Label20.Enabled := True;
+    cbNotifyLogDelay.Enabled := True;
+  end
+  else
+  begin
+    cbLogANSI.Enabled := False;
+    cbLogBinary.Enabled := False;
+    Label9.Enabled := False;
+    tbShortenDelay.Enabled := False;
+    Label20.Enabled := True;
+    cbNotifyLogDelay.Enabled := False;
+  end
+
+end;
+
+procedure TfrmSetup.cbAcceptExternalClick(Sender: TObject);
+begin
+  if (cbAcceptExternal.Checked = True) then
+  begin
+    cbBroadcast.Enabled := True;
+    cbBroadcast.Checked := True;
+  end
+  else
+  begin
+    cbBroadcast.Enabled := False;
+    cbBroadcast.Checked := False;
+  end;
+end;
+
+procedure TfrmSetup.cbLogBinaryClick(Sender: TObject);
+begin
+  cbLogANSI.Checked := True;
 end;
 
 end.

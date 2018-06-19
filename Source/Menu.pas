@@ -34,7 +34,9 @@ uses
   Extctrls,
   Script,
   ScriptCmp,
-  SysUtils;
+  SysUtils,
+  Messages,
+  Dialogs;
 
 type
   TMenuEvent = procedure(ClientIndex : Byte) of object;
@@ -153,7 +155,7 @@ type
     procedure BeforeDestruction; override;
     procedure StateValuesLoaded; override;
 
-    function AddCustomMenu(Parent, Name, Title, Reference, Prompt : string; HotKey : Char; CloseActivate : Boolean; ScriptOwner : TScript) : TTWXMenuItem;
+    function AddCustomMenu(Parent, Name, Title, Reference, Prompt : string; HotKey : Char; CloseActivate, HideActive, isLabel : Boolean; ScriptOwner : TScript) : TTWXMenuItem;
     procedure LinkMenu(Item : TTWXMenuItem);
     procedure UnlinkMenu(Item : TTWXMenuItem);
     procedure OpenMenu(MenuName : string; ClientIndex : Byte); // do NOT call with mtNone
@@ -164,6 +166,8 @@ type
     procedure BeginScriptInput(Script : TScript; VarParam : TVarParam; SingleKey : Boolean);
     procedure ApplySetup;
     function GetMenuByName(MenuName : string) : TTWXMenuItem;
+    procedure HideMenu(Name : string; Hide : Boolean);
+    procedure HideMenuItem(Item : TTWXMenuItem; Name : string; Hide : Boolean);
 
     property HelpMode : Boolean read FHelpMode write FHelpMode;
 
@@ -185,6 +189,7 @@ type
     procedure AddParam(P : Pointer);
     procedure DumpOptions;
     procedure SetOptions(OpExit, OpList, OpHelp : Boolean);
+    procedure Hide(Name : string; Hide : Boolean);
     function GetParam(Index : Integer) : Pointer;
     function GetPrompt : string;
     function GetMenuItemCount : Integer;
@@ -202,7 +207,7 @@ type
     FHotKey         : Char;
     FController     : TModMenu;
     MenuParams,
-    MenuItems       : TList;
+    FMenuItems       : TList;
     FParentMenu     : TTWXMenuItem;
     FOpExit,
     FOpList,
@@ -212,6 +217,8 @@ type
     FIsCustom,
     FScriptMacrosOn : Boolean;
     FScriptOwner    : TScript;
+    FHideActive     : Boolean;
+    FLabel          : Boolean;
 
   published
     property OnLineComplete : TMenuEvent read FOnLineComplete write FOnLineComplete;
@@ -231,6 +238,9 @@ type
     property Value : string read FValue write FValue;
     property Help : string read FHelp write FHelp;
     property ClearLine : Boolean read FClearLine write FClearLine;
+    property MenuItems : TList read FMenuItems write FMenuItems;
+    property HideActive : Boolean read FHideActive write FHideActive;
+    property isLabel : Boolean read FLabel write FLabel;
   end;
 
 implementation
@@ -248,6 +258,10 @@ const
   MENU_DARK = ANSI_2;
   MENU_MID = ANSI_10;
   MENU_LIGHT = ANSI_15;
+  MENU_OPTION = ANSI_3;
+  MENU_LABEL = ANSI_5;
+  MENU_VALUE_DARK = ANSI_7;
+  MENU_VALUE_LIGHT = ANSI_15;
 
 
 procedure DumpHeapStatus;
@@ -848,10 +862,12 @@ begin
   FProgramDir := Value;
 end;
 
-function TModMenu.AddCustomMenu(Parent, Name, Title, Reference, Prompt : string; HotKey : Char; CloseActivate : Boolean; ScriptOwner : TScript) : TTWXMenuItem;
+function TModMenu.AddCustomMenu(Parent, Name, Title, Reference, Prompt : string; HotKey : Char; CloseActivate, HideActive, isLabel : Boolean; ScriptOwner : TScript) : TTWXMenuItem;
 begin
   Result := TTWXMenuItem.Create(Self, Name, Title, Prompt, HotKey);
   Result.Reference := UpperCase(Reference);
+  Result.HideActive := HideActive;
+  Result.isLabel := isLabel;
   Result.CloseActivate := CloseActivate;
   Result.ScriptOwner := ScriptOwner;
   Result.IsCustom := TRUE;
@@ -1224,6 +1240,43 @@ procedure TModMenu.miListDirectory(ClientIndex : Byte);
 var
   SearchRec : TSearchRec;
   HighLight : Boolean;
+  ScriptDesc  : string;
+
+  function GetDescription(Filename : String) : string;
+  var
+    F : FILE;
+    Hdr       : TScriptFileHeader;
+    ValStr    : string;
+  begin
+    ValStr := '';
+
+    AssignFile(F, Filename);
+    Reset(F, 1);
+
+    // read header
+    BlockRead(F, Hdr, SizeOf(Hdr));
+
+    // check header
+    if (Hdr.ProgramName <> 'TWX PRO SCRIPT') then
+    begin
+      Exit;
+    end
+    else if (Hdr.Version <> COMPILED_SCRIPT_VERSION) then
+    begin
+      Exit;
+    end;
+
+    // Get the description, if there is one
+    if (Hdr.DescSize > 0) then
+    begin
+      SetLength(ValStr, Hdr.DescSize);
+      BlockRead(F, PChar(ValStr)^, Hdr.DescSize);
+    end;
+
+    Close(F);
+    Result := ValStr;
+  end;
+
 begin
   TWXServer.Broadcast(endl + endl + MENU_LIGHT + 'Listing contents of script directory' + endl + endl);
 
@@ -1238,7 +1291,21 @@ begin
           HighLight := TRUE;
 
       if (HighLight) then
-        TWXServer.Broadcast(MENU_MID + SearchRec.Name + endl)
+      begin
+        TWXServer.Broadcast(MENU_MID + SearchRec.Name + endl);
+        if (UpperCase(Copy(SearchRec.Name, Length(SearchRec.Name) - 3, 4)) = '.CTS') then
+        begin
+          ScriptDesc := GetDescription('scripts\' + SearchRec.Name);
+
+          if (Length(ScriptDesc) > 0) then
+          begin
+            if (Copy(ScriptDesc, Length(ScriptDesc), 1) = #13) or (Copy(ScriptDesc, Length(ScriptDesc), 1) = #10) then
+              TWXServer.Broadcast(MENU_OPTION + 'Description: ' + ANSI_7 + ScriptDesc)
+            else
+              TWXServer.Broadcast(MENU_OPTION + 'Description: ' + ANSI_7 + ScriptDesc + endl);
+          end;
+        end;
+      end
       else
         TWXServer.Broadcast(MENU_DARK + SearchRec.Name + endl);
     until (FindNext(SearchRec) <> 0);
@@ -2229,7 +2296,7 @@ begin
       if (FileOpen) then
         CloseFile(F);
 
-      if not (Errored) and (Head.ProgramName = 'TWX DATABASE') and (Head.Version = DATABASE_VERSION) then
+      if not (Errored) and (Head.ProgramName = 'TWX PRO DATABASE') and (Head.Version = DATABASE_VERSION) then
       begin
         Name := StripFileExtension(S.Name);
         Sectors := IntToStr(Head.Sectors);
@@ -2436,7 +2503,48 @@ var
   Item : TTWXMenuItem;
 begin
   // show all menu options
-  TWXServer.Broadcast(ANSI_CLEARLINE + #13 + MENU_LIGHT + FTitle + ':' + endl);
+  TWXServer.Broadcast(ANSI_CLEARLINE + #13 + endl);
+  TWXServer.Broadcast(#13 + MENU_LIGHT + FTitle + ':' + endl);
+
+  TWXServer.Broadcast(endl);
+
+  // sort menu options by their hotkey
+  if (MenuItems.Count > 1) and not (TTWXMenuItem(MenuItems.Items[1]).IsCustom)then
+    MenuItems.Sort(MenuSortFunc);
+
+  for I := 0 to MenuItems.Count - 1 do
+  begin
+    Item := TTWXMenuItem(MenuItems.Items[I]);
+
+    if not (Item.HideActive) then
+    begin
+      if not (ITem.isLabel) then
+      begin
+
+        //TWXServer.Broadcast(MENU_MID + Item.HotKey + MENU_DARK + ' - ' + Item.Title);
+        TWXServer.Broadcast(MENU_Option + Item.HotKey + MENU_DARK + ' - ' + Item.Title);
+
+        if (Item.Value <> '')then
+        begin
+          // display menu item value
+          TWXServer.Broadcast(GetSpace(25 - Length(Item.Title)) + MENU_LIGHT + StringReplace(Item.Value, #13, '*', [rfReplaceAll]));
+        end;
+      end
+      else
+      begin
+        if (I = 0) then
+          if (UpperCase(Item.Title) <> 'SPACE') then
+            TWXServer.Broadcast(MENU_LABEL + Item.Title)
+        else
+          if (UpperCase(Item.Title) <> 'SPACE') then
+            TWXServer.Broadcast(endl + MENU_LABEL + Item.Title);
+      end;
+
+      TWXServer.Broadcast(endl);
+    end;
+  end;
+
+  TWXServer.Broadcast(endl);
 
   if (FOpList) then
     TWXServer.Broadcast(ANSI_15 + '?' + ANSI_7 + ' - Command list' + endl);
@@ -2452,25 +2560,6 @@ begin
       TWXServer.Broadcast(ANSI_15 + 'Q' + ANSI_7 + ' - Exit menu' + endl);
   end;
 
-  // sort menu options by their hotkey
-  if (MenuItems.Count > 1) then
-    MenuItems.Sort(MenuSortFunc);
-
-  for I := 0 to MenuItems.Count - 1 do
-  begin
-    Item := TTWXMenuItem(MenuItems.Items[I]); 
-
-    TWXServer.Broadcast(MENU_MID + Item.HotKey + MENU_DARK + ' - ' + Item.Title);
-
-    if (Item.Value <> '') then
-    begin
-      // display menu item value
-      TWXServer.Broadcast(GetSpace(25 - Length(Item.Title)) + MENU_LIGHT + StringReplace(Item.Value, #13, '*', [rfReplaceAll]));
-    end;
-
-    TWXServer.Broadcast(endl);
-  end;
-
   TWXServer.Broadcast(endl + GetPrompt);
 end;
 
@@ -2478,7 +2567,7 @@ procedure TTWXMenuItem.SetOptions(OpExit, OpList, OpHelp : Boolean);
 begin
   FOpExit := OpExit;
   FOpList := OpList;
-  FOpHelp := OpHelp;  
+  FOpHelp := OpHelp;
 end;
 
 procedure TTWXMenuItem.AddItem(Item : TTWXMenuItem);
@@ -2561,7 +2650,9 @@ begin
       Found := FALSE;
 
       for I := 0 to MenuItems.Count - 1 do
-        if (TTWXMenuItem(MenuItems.Items[I]).HotKey = UpCase(Key)) then
+        if (TTWXMenuItem(MenuItems.Items[I]).HotKey = UpCase(Key))
+          and not (TTWXMenuItem(MenuItems.Items[I]).HideActive)
+          and not (TTWXMenuItem(MenuItems.Items[I]).isLabel) then
         begin
           Controller.OpenMenuItem(MenuItems.Items[I], ClientIndex, FName);
           Found := TRUE;
@@ -2654,6 +2745,37 @@ function TTWXMenuItem.GetMenuItemCount : Integer;
 begin
   Result := MenuItems.Count;
 end;
+
+procedure TModMenu.HideMenu(Name : string; Hide : Boolean);
+begin
+  //TWXServer.ClientMessage('ParentMenu is ' + CurrentMenu.ParentMenu.Name);
+  //TWXServer.ClientMessage('Current Menu Name: ' + CurrentMenu.ParentMenu.Name);
+
+  HideMenuItem(CurrentMenu.ParentMenu, Name, Hide);
+end;
+
+procedure TModMenu.HideMenuItem(Item : TTWXMenuItem; Name: string; Hide : Boolean);
+begin
+  Item.Hide(Name, Hide);
+end;
+
+procedure TTWXMenuItem.Hide(Name : string; Hide : Boolean);
+var
+  I    : Integer;
+  Item : TTWXMenuItem;
+begin
+  for I := 0 to MenuItems.Count - 1 do
+  begin
+    Item := TTWXMenuItem(MenuItems.Items[I]);
+
+    if (UpperCase(Name) = Item.Name) then
+    begin
+      Item.HideActive := Hide;
+      break;
+    end;
+  end;
+end;
+
 
 end.
 

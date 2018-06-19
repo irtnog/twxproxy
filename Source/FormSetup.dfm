@@ -1,6 +1,6 @@
 object frmSetup: TfrmSetup
-  Left = 263
-  Top = 170
+  Left = 83
+  Top = 631
   Width = 377
   Height = 404
   AutoSize = True
@@ -33,7 +33,7 @@ object frmSetup: TfrmSetup
     Top = 0
     Width = 369
     Height = 345
-    ActivePage = tabServer
+    ActivePage = tabProgram
     TabOrder = 0
     OnChanging = PageControlChanging
     object tabServer: TTabSheet
@@ -266,6 +266,7 @@ object frmSetup: TfrmSetup
         Height = 17
         Caption = 'Accept external connections'
         TabOrder = 3
+        OnClick = cbAcceptExternalClick
       end
       object cbBroadcast: TCheckBox
         Left = 16
@@ -273,8 +274,7 @@ object frmSetup: TfrmSetup
         Width = 241
         Height = 17
         Caption = 'Broadcast a message when a client connects'
-        Checked = True
-        State = cbChecked
+        Enabled = False
         TabOrder = 4
       end
       object tbListenPort: TEdit
@@ -334,6 +334,16 @@ object frmSetup: TfrmSetup
         Caption = 'Local echo of outgoing text'
         TabOrder = 7
       end
+      object cbShortName: TCheckBox
+        Left = 16
+        Top = 240
+        Width = 313
+        Height = 17
+        Caption = 'Use Script Names for Script Loaded/Stopped Event Triggers'
+        Enabled = False
+        TabOrder = 8
+        Visible = False
+      end
     end
     object tabLogging: TTabSheet
       Caption = 'Logging'
@@ -344,6 +354,7 @@ object frmSetup: TfrmSetup
         Width = 165
         Height = 13
         Caption = 'Shorten all playback delays above '
+        Enabled = False
       end
       object Label20: TLabel
         Left = 230
@@ -351,6 +362,7 @@ object frmSetup: TfrmSetup
         Width = 40
         Height = 13
         Caption = 'seconds'
+        Enabled = False
       end
       object cbLog: TCheckBox
         Left = 16
@@ -359,6 +371,7 @@ object frmSetup: TfrmSetup
         Height = 17
         Caption = 'Log data according to selected database'
         TabOrder = 0
+        OnClick = cbLogClick
       end
       object cbLogANSI: TCheckBox
         Left = 48
@@ -366,6 +379,7 @@ object frmSetup: TfrmSetup
         Width = 161
         Height = 17
         Caption = 'Log ANSI codes'
+        Enabled = False
         TabOrder = 1
       end
       object cbLogBinary: TCheckBox
@@ -374,7 +388,9 @@ object frmSetup: TfrmSetup
         Width = 289
         Height = 17
         Caption = 'Log as binary (allows extra logging and capture features)'
+        Enabled = False
         TabOrder = 2
+        OnClick = cbLogBinaryClick
       end
       object cbNotifyLogDelay: TCheckBox
         Left = 16
@@ -382,6 +398,7 @@ object frmSetup: TfrmSetup
         Width = 241
         Height = 17
         Caption = 'Notify when a delay has been shortened'
+        Enabled = False
         TabOrder = 3
       end
       object tbShortenDelay: TEdit
@@ -389,6 +406,7 @@ object frmSetup: TfrmSetup
         Top = 110
         Width = 41
         Height = 21
+        Enabled = False
         TabOrder = 4
         Text = '0'
       end

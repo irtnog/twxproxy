@@ -1,6 +1,6 @@
 object frmAbout: TfrmAbout
-  Left = 158
-  Top = 825
+  Left = 605
+  Top = 489
   BorderStyle = bsNone
   Caption = 'About'
   ClientHeight = 152
@@ -707,11 +707,11 @@ object frmAbout: TfrmAbout
     Pen.Width = 2
   end
   object lbVersion: TLabel
-    Left = 48
+    Left = 29
     Top = 8
-    Width = 103
+    Width = 143
     Height = 13
-    Caption = 'TWX Proxy vX.XX'
+    Caption = 'TWX Proxy Pro vX.XXRC'
     Color = clBlack
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clInfoBk
@@ -724,10 +724,11 @@ object frmAbout: TfrmAbout
   end
   object Label1: TLabel
     Left = 16
-    Top = 24
-    Width = 217
-    Height = 13
+    Top = 26
+    Width = 170
+    Height = 25
     Alignment = taCenter
+    AutoSize = False
     Caption = #169' Remco Mulder ("Xide") 2002 - 2005'
     Color = clBlack
     Font.Charset = DEFAULT_CHARSET
@@ -740,6 +741,34 @@ object frmAbout: TfrmAbout
     Transparent = True
     Layout = tlCenter
     WordWrap = True
+  end
+  object Label2: TLabel
+    Left = 56
+    Top = 74
+    Width = 89
+    Height = 13
+    Caption = 'Maintained by'
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clInfoBk
+    Font.Height = -11
+    Font.Name = 'MS Sans Serif'
+    Font.Style = [fsBold]
+    ParentFont = False
+    Transparent = True
+  end
+  object Label3: TLabel
+    Left = 50
+    Top = 90
+    Width = 102
+    Height = 13
+    Caption = 'TWX Proxy Group'
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clInfoBk
+    Font.Height = -11
+    Font.Name = 'MS Sans Serif'
+    Font.Style = [fsBold]
+    ParentFont = False
+    Transparent = True
   end
   object btnOK: TButton
     Left = 104

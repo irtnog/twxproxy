@@ -73,8 +73,7 @@ end;
 procedure ConvertToFloat(const S : string; const Precision : Integer; var N : Extended);
 begin
   try
-    // ugly and slow code ... required for float rounding to specified precision
-    N := StrToFloat(FormatFloatToStr(StrToFloat(S), Precision));
+    N := StrToFloat(S)
   except
     raise EScriptError.Create('''' + S + ''' is not a decimal number');
   end;
@@ -118,7 +117,10 @@ begin
 
   ConvertToFloat(Params[0].Value, TScript(Script).DecimalPrecision, F1);
   ConvertToFloat(Params[1].Value, TScript(Script).DecimalPrecision, F2);
-  Params[0].Value := FormatFloatToStr(F1 + F2, TScript(Script).DecimalPrecision);
+  if (TScript(Script).DecimalPrecision = 0) then
+    Params[0].Value := IntToStr(Trunc(F1 + F2))
+  else
+    Params[0].Value := FormatFloatToStr(F1 + F2, TScript(Script).DecimalPrecision);
 
   Result := caNone;
 end;
@@ -126,8 +128,16 @@ end;
 function CmdAddMenu(Script : TObject; Params : array of TCmdParam) : TCmdAction;
 var
   LabelName : string;
+  Hide : Boolean;
+  ParamsCount : Integer;
 begin
   // CMD: addMenu <parent> <name> <description> <hotkey> <reference> <prompt> <closeMenu>
+  ParamsCount := Length(Params);
+  //TWXServer.ClientMessage('ParamCount: ' + IntToStr(ParamsCount));
+  if (ParamsCount = 8) then
+    Hide := (Params[7].Value = '1')
+  else
+    Hide := FALSE;
 
   if (Length(Params[3].Value) <> 1) then
     raise EScriptError.Create('Bad menu hotkey');
@@ -139,7 +149,27 @@ begin
 
   TScript(Script).AddMenu(TWXMenu.AddCustomMenu(UpperCase(Params[0].Value),
     UpperCase(Params[1].Value), Params[2].Value, LabelName, Params[5].Value,
-    UpCase(Params[3].Value[1]), (Params[6].Value = '1'), TScript(Script)));
+    UpCase(Params[3].Value[1]), (Params[6].Value = '1'), Hide, FALSE, TScript(Script)));
+
+  Result := caNone;
+end;
+
+function CmdAddMenuLabel(Script : TObject; Params : array of TCmdParam) : TCmdAction;
+var
+  Hide : Boolean;
+  ParamsCount : Integer;
+begin
+  // CMD: addMenuLabel <parent> <name> <description>
+
+  ParamsCount := Length(Params);
+  if (ParamsCount = 4) then
+    Hide := (Params[3].Value = '1')
+  else
+    Hide := FALSE;
+
+  TScript(Script).AddMenu(TWXMenu.AddCustomMenu(UpperCase(Params[0].Value),
+    UpperCase(Params[1].Value), Params[2].Value, '', '',
+    ' ', FALSE, Hide, TRUE, TScript(Script)));
 
   Result := caNone;
 end;
@@ -256,7 +286,10 @@ begin
   if (F2 = 0) then
     raise EScriptError.Create('Division by zero');
 
-  Params[0].Value := FormatFloatToStr(F1 / F2, TScript(Script).DecimalPrecision);
+  if (TScript(Script).DecimalPrecision = 0) then
+    Params[0].Value := IntToStr(Trunc(F1 / F2))
+  else
+    Params[0].Value := FormatFloatToStr(F1 / F2, TScript(Script).DecimalPrecision);
 
   Result := caNone;
 end;
@@ -716,6 +749,20 @@ begin
   Result := caStop;
 end;
 
+function CmdHideMenu(Script : TObject; Params : array of TCmdParam) : TCmdAction;
+begin
+  // CMD: hideMenu True/False
+
+  try
+    TWXMenu.HideMenu(Params[0].Value, (Params[1].Value = '1'));
+  except
+    on E : Exception do
+      raise EScriptError.Create(E.Message);
+  end;
+
+  Result := caNone;
+end;
+
 function CmdIsEqual(Script : TObject; Params : array of TCmdParam) : TCmdAction;
 var
   F1,
@@ -970,7 +1017,11 @@ begin
 
   ConvertToFloat(Params[0].Value, TScript(Script).DecimalPrecision, F1);
   ConvertToFloat(Params[1].Value, TScript(Script).DecimalPrecision, F2);
-  Params[0].Value := FormatFloatToStr(F1 * F2, TScript(Script).DecimalPrecision);
+
+  if (TScript(Script).DecimalPrecision = 0) then
+    Params[0].Value := IntToStr(Trunc(F1 * F2))
+  else
+    Params[0].Value := FormatFloatToStr(F1 * F2, TScript(Script).DecimalPrecision);
 
   Result := caNone;
 end;
@@ -1307,7 +1358,7 @@ begin
   if (Length(Params[1].Value) > 10) then
     raise EScriptError.Create(SCSectorParameterError);
 
-  if (Length(Params[2].Value) > 10) then
+  if (Length(Params[2].Value) > 40) then
     raise EScriptError.Create(SCSectorParameterValueError);
 
   TWXDatabase.SetSectorVar(Index, Params[1].Value, Params[2].Value);
@@ -1442,7 +1493,11 @@ begin
 
   ConvertToFloat(Params[0].Value, TScript(Script).DecimalPrecision, F1);
   ConvertToFloat(Params[1].Value, TScript(Script).DecimalPrecision, F2);
-  Params[0].Value := FormatFloatToStr(F1 - F2, TScript(Script).DecimalPrecision);
+
+  if (TScript(Script).DecimalPrecision = 0) then
+    Params[0].Value := IntToStr(Trunc(F1 - F2))
+  else
+    Params[0].Value := FormatFloatToStr(F1 - F2, TScript(Script).DecimalPrecision);
 
   Result := caNone;
 end;
@@ -2305,6 +2360,16 @@ begin
   Result := IntToStr(TWXDatabase.DBHeader.StarDock);
 end;
 
+function SCAlphaCentauri(Indexes : TStringArray) : string;
+begin
+  Result := IntToStr(TWXDatabase.DBHeader.Class0_1);
+end;
+
+function SCRylos(Indexes : TStringArray) : string;
+begin
+  Result := IntToStr(TWXDatabase.DBHeader.Class0_2);
+end;
+
 function SCTime(Indexes : TStringArray) : string;
 begin
   Result := TimeToStr(Now);
@@ -2323,6 +2388,7 @@ procedure BuildSysConstList(ScriptRef : TScriptRef);
 begin
   with (ScriptRef) do
   begin
+    AddSysConstant('ALPHACENTAURI', SCAlphaCentauri);
     AddSysConstant('ANSI_0', SCAnsi_0);
     AddSysConstant('ANSI_1', SCAnsi_1);
     AddSysConstant('ANSI_2', SCAnsi_2);
@@ -2361,6 +2427,7 @@ begin
     AddSysConstant('PORT.PERCENTFUEL', SCPort_PercentFuel);
     AddSysConstant('PORT.PERCENTORG', SCPort_PercentOrg);
     AddSysConstant('PORT.PERCENTEQUIP', SCPort_PercentEquip);
+    AddSysConstant('RYLOS', SCRylos);
     AddSysConstant('SECTOR.ANOMOLY', SCSector_Anomoly);
     AddSysConstant('SECTOR.BACKDOORCOUNT', SCSector_BackDoorCount);
     AddSysConstant('SECTOR.BACKDOORS', SCSector_BackDoors);
@@ -2396,7 +2463,8 @@ begin
   with (ScriptRef) do
   begin
     AddCommand('ADD', 2, 2, CmdAdd, [pkVar, pkValue], pkValue);
-    AddCommand('ADDMENU', 7, 7, CmdAddMenu, [pkValue, pkValue, pkValue, pkValue, pkValue, pkValue], pkValue);
+    AddCommand('ADDMENU', 7, 8, CmdAddMenu, [pkValue, pkValue, pkValue, pkValue, pkValue, pkValue, pkValue, pkValue], pkValue);
+    AddCommand('ADDMENULABEL', 3, 3, CmdAddMenuLabel, [pkValue, pkValue], pkValue);
     AddCommand('AND', 2, 2, CmdAnd, [pkVar, pkValue], pkValue);
     AddCommand('BRANCH', 2, 2, CmdBranch, [pkValue, pkValue], pkValue);
     AddCommand('CLIENTMESSAGE', 1, 1, CmdClientMessage, [pkValue], pkValue);
@@ -2427,6 +2495,7 @@ begin
     AddCommand('GETWORD', 3, 4, CmdGetWord, [pkValue, pkVar, pkValue], pkValue);
     AddCommand('GETWORDPOS', 3, 3, CmdGetWordPos, [pkValue, pkVar, pkValue], pkValue);
     AddCommand('HALT', 0, 0, CmdHalt, [], pkValue);
+    AddCommand('HIDEMENUITEM', 2, 2, CmdHideMenu, [pkValue, pkValue], pkValue);
     AddCommand('ISEQUAL', 3, 3, CmdIsEqual, [pkVar, pkValue, pkValue], pkValue);
     AddCommand('ISGREATER', 3, 3, CmdIsGreater, [pkVar, pkValue, pkValue], pkValue);
     AddCommand('ISGREATEREQUAL', 3, 3, CmdIsGreaterEqual, [pkVar, pkValue, pkValue], pkValue);
@@ -2443,7 +2512,7 @@ begin
     AddCommand('LOWERCASE', 1, 1, CmdLowerCase, [pkVar], pkValue);
     AddCommand('MERGETEXT', 3, 3, CmdMergeText, [pkValue, pkValue, pkVar], pkValue);
     AddCommand('MULTIPLY', 2, 2, CmdMultiply, [pkVar, pkValue], pkValue);
-    AddCommand('OPENMENU', 1, 1, CmdOpenMenu, [pkValue], pkValue);
+    AddCommand('OPENMENU', 1, 2, CmdOpenMenu, [pkValue, pkValue], pkValue);
     AddCommand('OR', 2, 2, CmdOr, [pkVar, pkValue], pkValue);
     AddCommand('PAUSE', 0, 0, CmdPause, [], pkValue);
     AddCommand('PROCESSIN', 2, 2, CmdProcessIn, [pkValue, pkValue], pkValue);
