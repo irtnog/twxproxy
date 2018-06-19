@@ -30,14 +30,18 @@ interface
 uses
   SysUtils,
   Classes,
-  Windows;
+  Windows,
+  ProjectVersionInfo;
 
 const
-  ProgramVersion = '2.03';
+  //ProgramVersion = '2.03';
   ReleaseVersion = 'Release Version';
   SetupFile = 'TWXSetup.dat';
 
   endl = #13 + #10;
+
+var
+  ProgramVersion : String;
 
 type
   TTWXModule = class;

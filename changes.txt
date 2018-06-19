@@ -1,3 +1,52 @@
+TWX PROXY v2.03 Build 13
+
+Program:
+
+* CORE:  There is a issues with TWX Proxy when making a connection to a local server.
+  Either after the script command CONNECT has been issued, or when using the menuing
+  system's connect option. i.e. $C  What happens is that TWX Proxy states that it is
+  attempting to make a connection to the local server.  Yet, no connection is actually
+  made, or attempted.  TWX Proxy just hangs at the message 'Attempint to connect to: server addy'.
+  Since this issue only seems to happen on certain systems, it was really hard to track
+  it down.
+
+  NOTE: This issue has been around since v1.06b.
+
+  This issue was caused by two factors. The first one is, there where a few bugs in the
+  telnet component used.  This can be easily solved by using the ICS distrobution dated
+  March 13, 2005 or newer.  The second thing is listed below:
+
+* CORE:  Xide originally coded TWX Proxy on Delphi 5.  As such he had coded an event, that
+  is inherited from the Telnet component class, to use a PChar for one of it's parameters.
+  But, the original event, as inherited from the Telnet component class, requires that
+  particular parameter to be a Pointer.  In Delphi 7, or newer, the inherited event's parameter
+  must be of the same type.  As such, it will throw a compiler error while compiling/building
+  the project.  So changing the event's parameter to be a Pointer was needed.  But, also
+  there was a need to update the event's method.  To typecast the Pointer parameter to a
+  PChar for use within the method.
+
+* INTERFACE:  Fixed a bug in the About window.  It was not displaying the
+  correct information for the version number.
+
+* EXECUTABLE:  Added build/fileversion information to the .exe file.  The build
+  information has four fields.  Major.Minor.Release.Build
+  By droping the build field, the fileversion will correspond to the program's version
+  number. i.e. build information 2.0.3.x -> v2.03
+
+* CORE:  Added code to retrieve version information from the .exe file.
+
+* CORE:  Changed Constant that holds the Program Version number, to a variable.
+
+* CORE:  Added code to update the Program Version variable with the
+  correct version information.  Based upon the version information retrieved
+  from the .exe.
+
+* INTERFACE:  Changed the font color used in the About window's labels.  This
+  allows the label to be readable, with the current background image.
+
+* INTERFACE:  Updated the Copyright to include years 2003 thru 2005.
+
+
 TWX PROXY v2.03 Changes
 
 Program:

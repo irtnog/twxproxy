@@ -26,9 +26,7 @@ program TWXProxy;
 {%File 'changes.txt'}
 
 uses
-{$IFNDEF RELEASE}
   MemCheck,
-{$ENDIF}
   Forms,
   Windows,
   SysUtils,
@@ -60,7 +58,9 @@ uses
   Persistence in 'Persistence.pas',
   GUI in 'GUI.pas',
   Observer in 'Observer.pas',
-  Messages;
+  Messages,
+  ProjectVersionInfo in 'ProjectVersionInfo.pas',
+  StrUtils;
 
 {$R *.RES}
 
@@ -83,6 +83,7 @@ var
   PersistenceManager: TPersistenceManager;
   MessageHandler: TMessageHandler;
   ProgramDir: string;
+  sPos: integer;
 
 function ModuleFactory(Module: TModuleType): TTWXModule;
 var
@@ -126,6 +127,9 @@ begin
 
   MessageHandler := TMessageHandler.Create;
   Application.OnMessage := MessageHandler.OnApplicationMessage;
+
+  // Set program version information
+  ProgramVersion := GetVersionField('ProgramVersion');
 
   // Create dirs if they aren't there
   if not (DirectoryExists(ProgramDir + '\data')) then
@@ -200,6 +204,7 @@ begin
   Application.Initialize;
   Application.Title := 'TWX Proxy';
   SetCurrentDir(ExtractFilePath(Application.ExeName));
+  ProjectVersionInfo.initVersionInfo;
   InitProgram;
 
   try

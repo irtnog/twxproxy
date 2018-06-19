@@ -45,7 +45,7 @@ type
 implementation
 
 uses
-  GUI;
+  GUI, Core;
 
 {$R *.DFM}
 
@@ -54,7 +54,7 @@ begin
   Left := (Screen.Width div 2) - (Width div 2);
   Top := (Screen.Height div 2) - (Height div 2);
 
-  lbVersion.Caption := 'TWX Proxy v' + Version;
+  lbVersion.Caption := 'TWX Proxy v' + ProgramVersion;
 end;
 
 procedure TfrmAbout.btnOKClick(Sender: TObject);

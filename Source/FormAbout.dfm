@@ -1,6 +1,6 @@
 object frmAbout: TfrmAbout
-  Left = 371
-  Top = 348
+  Left = 158
+  Top = 825
   BorderStyle = bsNone
   Caption = 'About'
   ClientHeight = 152
@@ -714,7 +714,7 @@ object frmAbout: TfrmAbout
     Caption = 'TWX Proxy vX.XX'
     Color = clBlack
     Font.Charset = DEFAULT_CHARSET
-    Font.Color = clMaroon
+    Font.Color = clInfoBk
     Font.Height = -11
     Font.Name = 'MS Sans Serif'
     Font.Style = [fsBold]
@@ -725,18 +725,21 @@ object frmAbout: TfrmAbout
   object Label1: TLabel
     Left = 16
     Top = 24
-    Width = 177
+    Width = 217
     Height = 13
-    Caption = '© Remco Mulder ("Xide") 2002'
+    Alignment = taCenter
+    Caption = #169' Remco Mulder ("Xide") 2002 - 2005'
     Color = clBlack
     Font.Charset = DEFAULT_CHARSET
-    Font.Color = clMaroon
+    Font.Color = clInfoBk
     Font.Height = -11
     Font.Name = 'MS Sans Serif'
     Font.Style = [fsBold]
     ParentColor = False
     ParentFont = False
     Transparent = True
+    Layout = tlCenter
+    WordWrap = True
   end
   object btnOK: TButton
     Left = 104
