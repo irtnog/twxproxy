@@ -1,6 +1,6 @@
 object frmAbout: TfrmAbout
-  Left = 605
-  Top = 489
+  Left = 360
+  Top = 718
   BorderStyle = bsNone
   Caption = 'About'
   ClientHeight = 152
@@ -37,6 +37,7 @@ object frmAbout: TfrmAbout
     00008000000080000000C0000001C0000001C0000001E0000003F0000007F000
     0007F800000FFC00001FFE00003FFF8000FFFFC001FFFFF80FFFFFFFFFFF}
   OldCreateOrder = False
+  Position = poDesktopCenter
   OnShow = FormShow
   PixelsPerInch = 96
   TextHeight = 13
@@ -745,7 +746,7 @@ object frmAbout: TfrmAbout
   object Label2: TLabel
     Left = 56
     Top = 74
-    Width = 89
+    Width = 80
     Height = 13
     Caption = 'Maintained by'
     Font.Charset = DEFAULT_CHARSET

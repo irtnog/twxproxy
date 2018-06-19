@@ -1,3 +1,21 @@
+TWX Proxy Pro v2.11 Changes
+
+This is just an interum build to take care of two possible issues with TWX Proxy Pro v2.10.
+
+* INTERFACE:  As I have been told through 3rd parties.  It seems that for some people the TWX Proxy Pro Setup
+  Window does not appear.  And the only information given to me is that it is not being displayed for those
+  using high screen resolutions.  Since I use a high screen resolution all the time, tested to see if this was
+  true.  Unfortunately I was never able to reproduce this on my systems.  But, I still went ahead an made an
+  adjustment to ensure that all TWX Proxy Windows are displayed.  No matter the screen resolution being used
+  on the target system.
+
+* DATABASE:  I have been trying to track down a issue with any version of TWX Proxy, or TWX Proxy Pro, not being
+  able to perform game database imports from other helpers.  There is no decernable pattern as to when TWX Proxy,
+  or TWX Proxy Pro, would through an error stating that it was a problem importing the game information.  I have
+  finally found and fixed the cause of this bug.
+
+
+
 TWX Proxy Pro v2.10 Changes
 
 Well, after some clean up of the last set of bug fixes.  There really was nothing else to do except to add new
@@ -18,25 +36,21 @@ Program:
   NOTE: I have also changed the icons used for TWX.  Instead of the Green colored icons.  It now uses a
   red colored icons.
 
-* INTERPRETER: In v2.03, Xide added a new parameter the OpenMenu command.  This parameter was to allow the
+* INTERPRETER: In v2.03, Xide added a new parameter to the OpenMenu command.  This parameter was to allow the
   script author to cause TWX not to pause once a Menu was opened.  (I can only guess as to the reason for
   this, or as to whom may have want it added.)  But, Xide had neglicted to update the interpreter as to how
-  many parameters it now takes, along with there types.  This has been corrected.
+  many parameters it now takes, along with their types.  This has been corrected.
 
 * INTERPRETER: On twxproxy.com RammaR had request that the STARDOCK System Value be updated by V Screen, in
   addition to visiting the sector StarDock is in.  This function has been added, and STARDOCK can now be
   updated by by the V Screen, as well as visiting the sector SD is in.
 
-  NOTE: There is a draw back to this, that is caused by the original TWX Database code.  If you plan to use a
-  script uses the STARDOCK value.  Then you must do one of the following for the SD sector to be available to
-  the script after the V screen listing.
+  NOTE: DO NOT use a waitFor statment right after displaying the V screen.  This causes the game's databse to
+  not be updated immediatly.  And it also does not update the game's database's memory cache.  Instead use a
+  waitOn statement, or a setTextTrigger/setTextLineTrigger statement instead.
 
-  1) Perform a manual V screen listing, then load any script that uses the STARDOCK value.
-  2) Have a script perform the V screen listing, then have it load a script that uses the STARDOCK value.
-  3) Hava the script perform the V screen listing, then perform a redisplay of the current sector.
-
-  Option 3 is the most viable option for this.  As it will work for any script running at the time of the update.
-  And those script(s) loaded by any script currently running.
+  If you must use a waitFor statement, then you MUST redisplay the current sector information before doing
+  anything else.  Or else the STARDOCK sector number will not be available to the script currently running. 
 
 * INTERPRETER: On twxproxy.com Traitor had request that two more System Values be added.  Both System Values as
   he had requested was to return the sectors that the Class 0 ports Alpha Centauri and Rylos are in.  Traitor
@@ -54,7 +68,7 @@ Program:
 * INTERPRETER: Added a new OPTIONAL parameter to the addMenu command.  This allows the user to create a menu,
   or menu item, that will be hidden upon display of the of it's parent menu.
 
-  NOTE:  This is totally backwords compartible with previous behaviours of the command.
+  NOTE:  This is totally backwords compatible with previous behaviours of the command.
 
 * INTERPRETER: Added a new command - hideMenuItem.  This allows the user to hide a menu item within the
   currently displayed parent menu.  If a menu item is hidden from view, it's hotkey/option key is not
@@ -91,12 +105,12 @@ Program:
   the TWXC.exe help display, was never fully implemented.  So, I went and finished implementing the feature.
   As the TWXC.exe's help display states.  If you wish to add a script description to your script when you
   compile it.  Just add another parameter that points to a text file that contains the script description.
-  And it will compile compile your script and add the description, not the file with the description, to you
+  And the compiler will compile your script and add the description, not the file with the description, to your
   compiled script.
 
   The script description will be displayed when doing a script listing, $SD.
 
-  NOTE: The script description does not, nor will it ever, interfere with your scripts runnability or speed
+  NOTE: The script description does not, nor will it ever, interfere with your scripts runnability, or the speed
   at which it will run.
 
 * NETCODE & CORE: I believe that the displaying of local, i.e. the same computer, client connections and disconnects
@@ -114,8 +128,8 @@ Program:
   had found that there was a major issue with the results returned for any decimal calculations.
 
   I was able to locate and fix the problem with the decimal calculations.  But, since I had no idea as to why
-  ElderProphet wanted Xide.  To code the decimal math operations they were coded.  So, I had planed to keep
-  the original code, along side the working code, and add a new command to turn the old code on/off.
+  ElderProphet wanted Xide.  To code the decimal math operations the way they were coded.  So, I had planed to
+  keep the original code, along side the working code, and add a new command to turn the old code on/off.
 
   But, after a surprised day of chating with ElderProphet. We had come to the conclusion that the old code
   was not needed.  And that we have very different opinions of how the Precision 0 code should be.  At first
@@ -134,7 +148,7 @@ Program:
 
   Of course ElderProhet has a different opinion on this, and refers to mine as just hogwash.  But, with the
   different versions of TWX going to be out.  There is really no need to becker over it.  As such I polished
-  off the precision 0 code to be similar to previous version.  If you supply a whole number for a math
+  off the precision 0 code to be similar to previous versions.  If you supply a whole number for a math
   operation.  The result will be the same as previous versions.  But, if you supply atleast one value that
   is a decimal.  Then the math operation(s) will perform the calculation, and the result will be rounded down.
 

@@ -37,6 +37,7 @@ object frmHistory: TfrmHistory
     0007F800000FFC00001FFE00003FFF8000FFFFC001FFFFF80FFFFFFFFFFF}
   Menu = mnuHistory
   OldCreateOrder = False
+  Position = poDesktopCenter
   OnResize = FormResize
   OnShow = FormShow
   PixelsPerInch = 96
@@ -170,13 +171,10 @@ object frmHistory: TfrmHistory
     Font.Height = -11
     Font.Name = 'MS Sans Serif'
     Font.Style = []
-    MinFontSize = 0
-    MaxFontSize = 0
     Left = 480
     Top = 61
   end
   object clrHistory: TColorDialog
-    Ctl3D = True
     Left = 480
     Top = 5
   end

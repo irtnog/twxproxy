@@ -38,6 +38,7 @@ object frmCap: TfrmCap
   Menu = mnuMain
   OldCreateOrder = False
   PopupMenu = mnuPopup
+  Position = poDesktopCenter
   OnCreate = FormCreate
   OnMouseDown = FormMouseDown
   OnMouseWheel = FormMouseWheel

@@ -56,7 +56,7 @@ begin
   Left := (Screen.Width div 2) - (Width div 2);
   Top := (Screen.Height div 2) - (Height div 2);
 
-  lbVersion.Caption := 'TWX Proxy Pro v' + ProgramVersion + 'RC';
+  lbVersion.Caption := 'TWX Proxy Pro v' + ProgramVersion;
 end;
 
 procedure TfrmAbout.btnOKClick(Sender: TObject);

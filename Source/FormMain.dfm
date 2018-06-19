@@ -39,6 +39,7 @@ object frmMain: TfrmMain
     00008000000080000000C0000001C0000001C0000001E0000003F0000007F000
     0007F800000FFC00001FFE00003FFF8000FFFFC001FFFFF80FFFFFFFFFFF}
   OldCreateOrder = False
+  Position = poDesktopCenter
   PixelsPerInch = 96
   TextHeight = 13
   object OpenDialog: TOpenDialog
